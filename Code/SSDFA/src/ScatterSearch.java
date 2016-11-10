@@ -16,7 +16,7 @@ public class ScatterSearch {
     public static void main(String args[]) {
         String strResultFile = args[1];
 
-        long fileReadStartTime =System.currentTimeMillis();
+        long fileReadStartTime = System.currentTimeMillis();
         GeneralizedSuffixTree tree = ReadAndStoreFragments(args[0]);
         int[][] overlapArray = tree.allPairSuffixPrefix();
 
@@ -245,6 +245,7 @@ public class ScatterSearch {
                 BufferedWriter bw = new BufferedWriter(new FileWriter(strResultFile, true));
 
                 long nContig = Utility.contigCount(BEST, overlapArray, threshold);
+                List<String> contigs = Utility.contig(BEST, overlapArray, threshold);
                 long endTime = System.currentTimeMillis();
                 long duration = (endTime - startTime) +  (fileReadEndTime - fileReadStartTime);
 

@@ -186,6 +186,141 @@ public class Utility {
         
         return fitness;
     }
+
+    public static List<String> contigs(int[] individual, int[][] overlapArray, long threshold, GeneralizedSuffixTree tree)
+    {
+        List<String> consensusSequences = new ArrayList<>();
+        List<Integer> voteForA = new ArrayList<>();
+        List<Integer> voteForT = new ArrayList<>();
+        List<Integer> voteForG = new ArrayList<>();
+        List<Integer> voteForC = new ArrayList<>();
+        int currentContigLength = 0;
+
+        for(int i = 1; i < individual.length - 1; i++)
+        {
+            int overlapWithPrevCount;
+            if(currentContigLength > 0)
+               overlapWithPrevCount = overlapArray[individual[i-1]][individual[i]];
+            else
+                overlapWithPrevCount = 0;
+            String currentFragment = tree.getString(individual[i]);
+            int positionInFragment = 0;
+            
+            // This loop wont execute if 
+            //the current fragment is the 
+            //first fragment of the current contig
+            for(int j = currentContigLength - overlapWithPrevCount; j < currentContigLength; j++)
+            {
+                int voteA, voteT, voteG, votC;
+                voteA = voteT = voteG = voteC = 0;
+                switch(currentFragment[positionInFragment])
+                {
+                    case 'A':
+                        voteA = 1;
+                        break;
+                    case 'T':
+                        voteT = 1;
+                        break;
+                    case 'G':
+                        voteG = 1;
+                        break;
+                    case 'C':
+                        voteC = 1;
+                }
+                voteForA.set(j, voteForA.get(j) + voteA);
+                voteForT.set(j, voteForT.get(j) + voteT);
+                voteForG.set(j, voteForG.get(j) + voteG);
+                voteForC.set(j, voteForC.get(j) + voteC);
+
+                positionInFragment += 1;
+            }
+
+            for(; positionInFragment < currentFragment.size(); positionInFragment++)
+            {
+                int voteA, voteT, voteG, votC;
+                voteA = voteT = voteG = voteC = 0;
+                switch(currentFragment[positionInFragment])
+                {
+                    case 'A':
+                        voteA = 1;
+                        break;
+                    case 'T':
+                        voteT = 1;
+                        break;
+                    case 'G':
+                        voteG = 1;
+                        break;
+                    case 'C':
+                        voteC = 1;
+                }
+                voteForA.add(voteA);
+                voteForT.add(voteT);
+                voteForG.add(voteG);
+                voteForC.add(voteC);
+                
+                currentContigLength += 1;
+            }
+
+            int overlapWithNextCount;
+            if(i == individual.length)
+                overlapWithNextCount = 0;
+            else
+                overlapWithNextCount = overlapArray[individual[i]][individual[i+1]];
+            
+            if(overlapWithNextCount <= threshold)
+            {
+                StringBuilder currentContig = new StringBuilder(currentContigLength);
+                for(int j = 0; j < currentContigLength; j++)
+                {
+                    int voteA, voteT, voteG, voteC;
+                    voteA = voteForA.get(j);
+                    voteT = voteForT.get(j);
+                    voteG = voteForG.get(j);
+                    voteC = voteForC.get(j);
+
+                    if(voteT < voteA){
+                        if(voteG < voteA){
+                            if(voteC < voteA)
+                                currentContig.append('A');
+                            else
+                                currentContig.append('C');
+                        }
+                        else{
+                            if(voteC < voterG)
+                                currentContig.append('G');
+                            else
+                                currentContig.append('C');
+                        }
+                    }
+                    else{
+                        if(voteG < voteT){
+                            if(voteC < voteT)
+                                currentContig.append('T');
+                            else
+                                currentContig.append('C');
+                        }
+                        else{
+                            if(voteC < voteG)
+                                currentContig.append('G');
+                            else
+                                currentContig.append('C');
+                        }
+                    }
+                }
+                consensusSequences.add(currentContig.toString());
+                currentContigLength = 0;
+                voteForA.clear();
+                voteForT.clear();
+                voteForG.clear();
+                voteForC.clear();
+            }
+        }
+        consensusSequences.add(currentContig.toString());
+
+        return consensusSequences;
+    }
+
+
     
     public static double diversity(int [][] population, int [] individual, int currentPopSize)
     {
