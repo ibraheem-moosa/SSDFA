@@ -315,7 +315,6 @@ public class Utility {
                 voteForC.clear();
             }
         }
-        //consensusSequences.add(currentContig.toString());
 
         return consensusSequences;
     }
