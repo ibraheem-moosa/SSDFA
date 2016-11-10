@@ -3,3 +3,4 @@ code/SSDFA/out/
 Data/*.fna
 Data/*.dat
 *.iml
+*.class
