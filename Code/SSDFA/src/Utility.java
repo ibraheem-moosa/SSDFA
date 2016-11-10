@@ -26,9 +26,9 @@ public class Utility {
     {
         int swapIndex1;
         int swapIndex2;
-        
+
         int length = individual.length;
-        
+
         swapIndex1 = rng.nextInt(length);
 
         while(swapIndex1 == (swapIndex2 = rng.nextInt(length)));
@@ -49,25 +49,25 @@ public class Utility {
 
         return mutatedIndividual;
     }
-        
+
     public static int [] mutation(int individual[],long threshold, int[][] overlapArray)
     {
         int length = individual.length;
         boolean[] flagArray = new boolean[length];
-        
+
         int count = 0;
         if(overlapArray[individual[0]][individual[1]] < threshold)
         {
             flagArray[0] = true;
             count++;
         }
-        
+
         if(overlapArray[individual[length - 2]][individual[length - 1]] < threshold)
         {
             flagArray[length - 1] = true;
             count++;
         }
-        
+
         for(int i = 1; i < length-1; i++)
         {
             if(overlapArray[individual[i-1]][individual[i]] <threshold
@@ -77,9 +77,9 @@ public class Utility {
                 count++;
             }
         }
-        
+
         List<Integer> changeList = new ArrayList<>(count);
-        
+
         for(int i = 0; i < length; i++)
         {
             if(flagArray[i] == true)
@@ -87,11 +87,11 @@ public class Utility {
                 changeList.add(individual[i]);
             }
         }
-        
+
         Collections.shuffle(changeList, rng);
-        
+
         int[] mutatedIndividual = individual.clone();
-        
+
         for(int i = 0, j = 0; i < length; i++)
         {
             if(flagArray[i] == true)
@@ -100,32 +100,32 @@ public class Utility {
                 j++;
             }
         }
-        
+
         return mutatedIndividual;
     }
-    
+
     public static int [][] crossover(int [] parent0, int [] parent1)
     {
         int children[][] = new int[2][];
         int length = parent0.length;
-        
-        
+
+
         children[0] = new int[length];
         children[1] = new int[length];
-        
+
         boolean[] crossoverFlag = new boolean[length]; //To choose parts of a parent
 
         for(int i = 0; i < length; i++)
         {
             crossoverFlag[i] = rng.nextBoolean();
         }
-        
+
         boolean[] presentFlag0 = new boolean[length];
         boolean[] presentFlag1 = new boolean[length];
-        
+
         ArrayList<Integer> queue0 = new ArrayList<Integer>();
         ArrayList<Integer> queue1 = new ArrayList<Integer>();
-        
+
         for(int i = 0; i < length; i++)
         {
             if(crossoverFlag[i])
@@ -157,7 +157,7 @@ public class Utility {
                 children[1][queue1.remove(0)] = parent0[i];
             }
         }
-        
+
         return children;
     }
 
@@ -166,11 +166,11 @@ public class Utility {
         double fitness = 0.0;
         long contigCount = 1;
         long totalOverlap = 0;
-        
+
         for(int i = 0; i < individual.length - 1; i++)
         {
             int overlapCount = overlapArray[individual[i]][individual[i+1]];
-            
+
             if(overlapCount <= threshold)
             {
                 contigCount++;
@@ -180,10 +180,10 @@ public class Utility {
                 totalOverlap += overlapCount;
             }
         }
-        
+
         fitness=((double)totalOverlap)/contigCount;
         //fitness = totalOverlap;
-        
+
         return fitness;
     }
 
@@ -205,9 +205,9 @@ public class Utility {
                 overlapWithPrevCount = 0;
             String currentFragment = tree.getString(individual[i]);
             int positionInFragment = 0;
-            
-            // This loop wont execute if 
-            //the current fragment is the 
+
+            // This loop wont execute if
+            //the current fragment is the
             //first fragment of the current contig
             for(int j = currentContigLength - overlapWithPrevCount; j < currentContigLength; j++)
             {
@@ -257,7 +257,7 @@ public class Utility {
                 voteForT.add(voteT);
                 voteForG.add(voteG);
                 voteForC.add(voteC);
-                
+
                 currentContigLength += 1;
             }
 
@@ -266,7 +266,7 @@ public class Utility {
                 overlapWithNextCount = 0;
             else
                 overlapWithNextCount = overlapArray[individual[i]][individual[i+1]];
-            
+
             if(overlapWithNextCount <= threshold)
             {
                 StringBuilder currentContig = new StringBuilder(currentContigLength);
@@ -321,7 +321,7 @@ public class Utility {
     }
 
 
-    
+
     public static double diversity(int [][] population, int [] individual, int currentPopSize)
     {
         double dist=0;
@@ -340,12 +340,12 @@ public class Utility {
 
         return dist/currentPopSize;
     }
-    
+
     public static double hammingDistance(int [] individual1, int [] individual2)
     {
         int size=individual1.length;
         double dist=0;
-        
+
         for(int i=0; i < size; i++)
         {
             if(individual1[i] != individual2[i])
@@ -353,7 +353,7 @@ public class Utility {
                 dist++;
             }
         }
-        
+
         return dist / size;
     }
 
@@ -421,8 +421,8 @@ public class Utility {
 
         return dist;
     }
-    
-    
+
+
     public static int [] tournamentSelection(int[][] population, int tournamentSize, double[] propArray)
     {
         int populationSize = population.length;
@@ -449,20 +449,20 @@ public class Utility {
 
         return s;
     }
-        
+
     public static long contigCount(int[] individual, int[][] overlapArray, long threshold)
     {
         long contigCount = 1;
-        
+
         for(int i = 0; i < individual.length - 1; i++)
         {
             int overlapCount = overlapArray[individual[i]][individual[i+1]];
-            
+
             if(overlapCount <= threshold) {
                 contigCount++;
             }
         }
-        
+
         return contigCount;
     }
 
