@@ -211,9 +211,9 @@ public class Utility {
             //first fragment of the current contig
             for(int j = currentContigLength - overlapWithPrevCount; j < currentContigLength; j++)
             {
-                int voteA, voteT, voteG, votC;
+                int voteA, voteT, voteG, voteC;
                 voteA = voteT = voteG = voteC = 0;
-                switch(currentFragment[positionInFragment])
+                switch(currentFragment.charAt(positionInFragment))
                 {
                     case 'A':
                         voteA = 1;
@@ -235,11 +235,11 @@ public class Utility {
                 positionInFragment += 1;
             }
 
-            for(; positionInFragment < currentFragment.size(); positionInFragment++)
+            for(; positionInFragment < currentFragment.length(); positionInFragment++)
             {
-                int voteA, voteT, voteG, votC;
+                int voteA, voteT, voteG, voteC;
                 voteA = voteT = voteG = voteC = 0;
-                switch(currentFragment[positionInFragment])
+                switch(currentFragment.charAt(positionInFragment))
                 {
                     case 'A':
                         voteA = 1;
@@ -286,7 +286,7 @@ public class Utility {
                                 currentContig.append('C');
                         }
                         else{
-                            if(voteC < voterG)
+                            if(voteC < voteG)
                                 currentContig.append('G');
                             else
                                 currentContig.append('C');
@@ -315,7 +315,7 @@ public class Utility {
                 voteForC.clear();
             }
         }
-        consensusSequences.add(currentContig.toString());
+        //consensusSequences.add(currentContig.toString());
 
         return consensusSequences;
     }

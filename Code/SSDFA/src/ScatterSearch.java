@@ -245,7 +245,7 @@ public class ScatterSearch {
                 BufferedWriter bw = new BufferedWriter(new FileWriter(strResultFile, true));
 
                 long nContig = Utility.contigCount(BEST, overlapArray, threshold);
-                List<String> contigs = Utility.contig(BEST, overlapArray, threshold);
+                List<String> contigs = Utility.contigs(BEST, overlapArray, threshold, tree);
                 long endTime = System.currentTimeMillis();
                 long duration = (endTime - startTime) +  (fileReadEndTime - fileReadStartTime);
 
