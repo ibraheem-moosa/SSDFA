@@ -196,7 +196,7 @@ public class Utility {
         List<Integer> voteForC = new ArrayList<>();
         int currentContigLength = 0;
 
-        for(int i = 1; i < individual.length; i++)
+        for(int i = 0; i < individual.length; i++)
         {
             int overlapWithPrevCount;
             if(currentContigLength > 0)
