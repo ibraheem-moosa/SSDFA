@@ -88,10 +88,11 @@ public class ScatterSearch {
         for (int i = 0; i < runRandSeeds.length; i++)
             runRandSeeds[i] = Utility.rng.nextLong();
 
+        //following line are commented out to produce file in .fna format(contains only fragment sequence)
+        /*
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter(strResultFile, true));
-			//fllowing line are comment out to produce file in .fna format(contains only fragment sequence)
-			/*
+
             bw.newLine();
             bw.append(new Date().toString());
             bw.newLine();
@@ -108,11 +109,11 @@ public class ScatterSearch {
             bw.append("diversity = " + diversityMeasure);
             bw.newLine();
             bw.close();
-            */ 
+
         } catch (Exception e) {
 
         }
-
+        */
         for (int runId = 1; runId <= 1; runId++)
         {
             long startTime = System.currentTimeMillis();
@@ -247,39 +248,41 @@ public class ScatterSearch {
                 BufferedWriter bw = new BufferedWriter(new FileWriter(strResultFile, true));
 
                 long nContig = Utility.contigCount(BEST, overlapArray, threshold);
+                System.out.println("number of contigs : " + Long.toString(nContig));
                 List<String> contigs = Utility.contigs(BEST, overlapArray, threshold, tree);
+                //System.err.println("contigs list size " + contigs.size());
                 long endTime = System.currentTimeMillis();
                 long duration = (endTime - startTime) +  (fileReadEndTime - fileReadStartTime);
-				System.out.println("Output file created");
+                                System.out.println("Output file created");
                 //bw.append(runId + " " + fitnessBest + " " + totalOverlap + " " + nContig + " " + duration);
                 //bw.newLine();
-                System.out.println("number of contigs : " + Long.toString(nContig));
 
                 //loop to print fragment sequence
                 for(int l = 0;l<contigs.size();l++) {
-					//giving name to each sequence of .fna output file
-					String seqName = ">Sequence_"+Integer.toString(l);
-					bw.append(seqName);
-					bw.newLine();
-					
-					String sequence = contigs.get(l);
-					//printing each sequence. 70 bp per line
-					for(int l1 = 0;l1<sequence.length();l1+=70) {
-						String s;
-						if(l1+70<sequence.length()) {
-							s = sequence.substring(l1, l1+70);
-						}
-						else{
-							s = sequence.substring(l1);
-						}
-						bw.append(s);
-						bw.newLine();
-					}
-				}
+                    //giving name to each sequence of .fna output file
+                    String seqName = ">Sequence_"+Integer.toString(l);
+                    bw.append(seqName);
+                    bw.newLine();
+
+                    String sequence = contigs.get(l);
+                    //printing each sequence. 70 bp per line
+                    for(int l1 = 0;l1<sequence.length();l1+=70) {
+                        String s;
+                        if(l1+70<sequence.length()) {
+                            s = sequence.substring(l1, l1+70);
+                        }
+                        else{
+                            s = sequence.substring(l1);
+                        }
+                        bw.append(s);
+                        bw.newLine();
+                    }
+                }
 
                 bw.close();
             } catch (Exception e) {
-
+                //System.err.println("Failed to created/open output file");
+                System.err.println(e);
             }
 
         }

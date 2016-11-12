@@ -196,7 +196,7 @@ public class Utility {
         List<Integer> voteForC = new ArrayList<>();
         int currentContigLength = 0;
 
-        for(int i = 1; i < individual.length - 1; i++)
+        for(int i = 1; i < individual.length; i++)
         {
             int overlapWithPrevCount;
             if(currentContigLength > 0)
@@ -206,6 +206,7 @@ public class Utility {
             String currentFragment = tree.getString(individual[i]);
             int positionInFragment = 0;
 
+            //System.err.println("Got overlap with prev count " + overlapWithPrevCount + "for individual " + i);
             // This loop wont execute if
             //the current fragment is the
             //first fragment of the current contig
@@ -262,7 +263,7 @@ public class Utility {
             }
 
             int overlapWithNextCount;
-            if(i == individual.length)
+            if(i == individual.length - 1)
                 overlapWithNextCount = 0;
             else
                 overlapWithNextCount = overlapArray[individual[i]][individual[i+1]];
