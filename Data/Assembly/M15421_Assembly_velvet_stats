@@ -1,0 +1,41 @@
+Contig Stats
+Total units: 1
+Reference: 10089
+BasesInFasta: 10119
+Min: 10119
+Max: 10119
+N10: 10119 COUNT: 1
+N25: 10119 COUNT: 1
+N50: 10119 COUNT: 1
+N75: 10119 COUNT: 1
+E-size:10149.09
+
+Genome Size: 10089
+Assembly Size: 10119
+Chaff bases: 0
+Missing Reference Bases: 0(0.00%)
+Missing Assembly Bases: 0(0.00%)
+Missing Assembly Contigs: 0(0.00%)
+Duplicated Reference Bases: 0
+Compressed Reference Bases: 0
+Bad Trim: 0
+Avg Idy: 100.00
+SNPs: 0
+Indels < 5bp: 0
+Indels >= 5: 0
+Inversions: 0
+Relocation: 1
+Translocation: 0
+
+Corrected Contig Stats
+Total units: 2
+Reference: 10089
+BasesInFasta: 10119
+Min: 3639
+Max: 6480
+N10: 6480 COUNT: 1
+N25: 6480 COUNT: 1
+N50: 6480 COUNT: 1
+N75: 3639 COUNT: 2
+E-size:5474.55
+
