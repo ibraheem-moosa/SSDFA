@@ -13,10 +13,10 @@ E-size:2851.08
 Genome Size: 10089
 Assembly Size: 32442
 Chaff bases: 296
-Missing Reference Bases: 213(2.11%)
+Missing Reference Bases: 0(0.00%)
 Missing Assembly Bases: 0(0.00%)
 Missing Assembly Contigs: 0(0.00%)
-Duplicated Reference Bases: 0
+Duplicated Reference Bases: 20515
 Compressed Reference Bases: 0
 Bad Trim: 0
 Avg Idy: 100.00
@@ -24,18 +24,18 @@ SNPs: 0
 Indels < 5bp: 0
 Indels >= 5: 0
 Inversions: 0
-Relocation: 3
+Relocation: 0
 Translocation: 0
 
 Corrected Contig Stats
-Total units: 46
+Total units: 15
 Reference: 10089
-BasesInFasta: 32017
+BasesInFasta: 11927
 Min: 202
-Max: 1608
-N10: 1608 COUNT: 1
-N25: 1578 COUNT: 2
-N50: 1344 COUNT: 4
-N75: 1044 COUNT: 6
-E-size:2751.39
+Max: 1578
+N10: 1578 COUNT: 1
+N25: 1558 COUNT: 2
+N50: 945 COUNT: 4
+N75: 780 COUNT: 7
+E-size:1140.17
 
