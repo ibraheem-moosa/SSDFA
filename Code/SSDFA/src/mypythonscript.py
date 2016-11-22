@@ -12,5 +12,5 @@ print(stdout_file)
 for threshold_weight in range(19, 9, -1):
     os.system("sed -i ""'4s/.*/thresholdweight=" + str(threshold_weight/100.0) + "/' config.txt")
     fname_prefix = str(threshold_weight).zfill(2)
-    os.system("java ScatterSearch " + fname_prefix + fragment_file + " " + fname_prefix + assembly_file + "| tee " + fname_prefix + stdout_file)
+    os.system("java ScatterSearch " + fragment_file + " " + fname_prefix + assembly_file + "| tee " + fname_prefix + stdout_file)
     print("Done with " + str(threshold_weight) + " percent")
