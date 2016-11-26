@@ -1,0 +1,41 @@
+Contig Stats
+Total units: 520
+Reference: 156305
+BasesInFasta: 667562
+Min: 647
+Max: 2867
+N10: 2377 COUNT: 7
+N25: 2112 COUNT: 17
+N50: 1922 COUNT: 37
+N75: 1802 COUNT: 57
+E-size:5929.95
+
+Genome Size: 156305
+Assembly Size: 667562
+Chaff bases: 0
+Missing Reference Bases: 485(0.31%)
+Missing Assembly Bases: 0(0.00%)
+Missing Assembly Contigs: 0(0.00%)
+Duplicated Reference Bases: 488059
+Compressed Reference Bases: 0
+Bad Trim: 0
+Avg Idy: 100.00
+SNPs: 0
+Indels < 5bp: 0
+Indels >= 5: 0
+Inversions: 0
+Relocation: 1
+Translocation: 0
+
+Corrected Contig Stats
+Total units: 132
+Reference: 156305
+BasesInFasta: 179503
+Min: 342
+Max: 2867
+N10: 2129 COUNT: 7
+N25: 1877 COUNT: 19
+N50: 1466 COUNT: 43
+N75: 1266 COUNT: 72
+E-size:1699.8
+
