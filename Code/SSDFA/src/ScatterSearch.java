@@ -10,6 +10,7 @@
 import java.io.*;
 import java.util.*;
 import suffixtree.*;
+import java.util.*;
 
 public class ScatterSearch {
 
@@ -182,14 +183,12 @@ public class ScatterSearch {
                 //
                 // So, the total size of new population: popSize * popSize
                 //
-                int[][] newPopulation = new int[popSize * popSize][];
 
-                for (int i = 0; i < popSize; i++) {
-                    newPopulation[i] = population[i];
-                }
-
-                for (int i = 0, k = popSize; i < popSize; i++) {
-                    for (int j = 0; j < i; j++) {
+                ArrayList<int[]> newIndividuals = new ArrayList<>();
+                
+                /*
+                for(int i = 0; i < popSize; i++) {
+                    for(int j = 0; j < i; j++) {
                         int[][] children = Utility.crossover(population[i], population[j]);
 
                         //
@@ -206,32 +205,83 @@ public class ScatterSearch {
 
                         children[0] = LocalSearch.HillClimbing(overlapArray, children[0], nHCIter, threshold);
                         children[1] = LocalSearch.HillClimbing(overlapArray, children[1], nHCIter, threshold);
+                        
+                        newIndividuals.add(children[0]);
+                        newIndividuals.add(children[1]);
 
-                        double fitness0 = Utility.fitness(children[0], overlapArray, threshold);
-                        double fitness1 = Utility.fitness(children[1], overlapArray, threshold);
-
-                        //
-                        // best fitness in the current run
-                        //
-                        if (fitness0 > fitnessRunBest) {
-                            fitnessRunBest = fitness0;
-                        }
-                        if (fitness1 > fitnessRunBest) {
-                            fitnessRunBest = fitness1;
-                        }
-
-                        if (fitness0 > fitnessBest) {
-                            BEST = children[0];
-                            fitnessBest = fitness0;
-                        }
-                        if (fitness1 > fitnessBest) {
-                            BEST = children[1];
-                            fitnessBest = fitness1;
-                        }
-
-                        newPopulation[k++] = children[0];
-                        newPopulation[k++] = children[1];
                     }
+                }
+                */
+
+                for(int i = 0; i < n; i++) {
+                    for(int j = 0; j < m; j++) {
+                        int[][] children = Utility.crossover(B[i], D[j]);
+
+                        //
+                        // Normal mutation operation
+                        //
+                        children[0] = Utility.mutation(children[0]);
+                        children[1] = Utility.mutation(children[1]);
+
+                        //
+                        // Exploitative mutation operation
+                        //
+                        children[0] = Utility.mutation(children[0], threshold, overlapArray);
+                        children[1] = Utility.mutation(children[1], threshold, overlapArray);
+
+                        children[0] = LocalSearch.HillClimbing(overlapArray, children[0], nHCIter, threshold);
+                        children[1] = LocalSearch.HillClimbing(overlapArray, children[1], nHCIter, threshold);
+                        
+                        newIndividuals.add(children[0]);
+                        newIndividuals.add(children[1]);
+
+                    }
+                }
+               
+                for(int i = 0; i < n; i++) {
+                    for(int j = 0; j < i; j++) {
+                        int[][] children = Utility.crossover(B[i], B[j]);
+
+                        //
+                        // Normal mutation operation
+                        //
+                        children[0] = Utility.mutation(children[0]);
+                        children[1] = Utility.mutation(children[1]);
+
+                        //
+                        // Exploitative mutation operation
+                        //
+                        children[0] = Utility.mutation(children[0], threshold, overlapArray);
+                        children[1] = Utility.mutation(children[1], threshold, overlapArray);
+
+                        children[0] = LocalSearch.HillClimbing(overlapArray, children[0], nHCIter, threshold);
+                        children[1] = LocalSearch.HillClimbing(overlapArray, children[1], nHCIter, threshold);
+                        
+                        newIndividuals.add(children[0]);
+                        newIndividuals.add(children[1]);
+
+                    }
+                }
+
+
+                for (int[] individual: newIndividuals) {
+                    double fitness = Utility.fitness(individual, overlapArray, threshold);
+
+                    if (fitness > fitnessRunBest) {
+                        fitnessRunBest = fitness;
+                    }
+
+                    if (fitness > fitnessBest) {
+                        BEST = individual;
+                        fitnessBest = fitness;
+                    }
+                }
+                
+                int [][] newPopulation = new int[newIndividuals.size() + popSize][];
+                newIndividuals.toArray(newPopulation);
+
+                for (int i = newIndividuals.size(); i < popSize + newIndividuals.size(); i++) {
+                    newPopulation[i] = population[i - newIndividuals.size()];
                 }
 
                 population = newPopulation;
