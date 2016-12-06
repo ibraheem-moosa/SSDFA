@@ -18,7 +18,8 @@ public class LocalSearch {
         while(nNoChange < nNoChangeLimit)
         {
             int[] r = Utility.mutation(best);
-            int[] r = Utility.mutation(best, threshold, ov);
+            //exploitive mutation 
+            r = Utility.mutation(best, threshold, ov);
 
             double fitness = Utility.fitness(r, ov, threshold);
 

@@ -47,6 +47,20 @@ public class ScatterSearch {
 
         int popSize = n + m;
 
+        n = Integer.parseInt(args[1]);
+        m = Integer.parseInt(args[2]);
+        popSize = n + m;
+        nHCIter = Integer.parseInt(args[3]);
+        thresholdWeight = Double.parseDouble(args[4];)
+        totalTime = Integer.parseInt(args[4]);
+        diversityMeasure = args[5];
+
+        if (0 == diversityMeasure.compareTo("PDistance"))
+            Utility.divMeasure = Utility.DivMeasure_PDistance;
+        else
+            Utility.divMeasure = Utility.DivMeasure_HamDistance;
+
+        /*
         try {
             Properties prop = new Properties();
 
@@ -67,6 +81,7 @@ public class ScatterSearch {
         } catch (Exception e) {
             System.out.println("Using hard-coded default configuration.");
         }
+        */
 
         //
         // We set the threshold to be thresholdWeight fraction of mean fragment length
@@ -84,7 +99,7 @@ public class ScatterSearch {
         //
         // Setup 10 random numbers as seeds for 10 runs
         //
-        Utility.rng.setSeed(1);
+        //Utility.rng.setSeed(1);
         long[] runRandSeeds = new long[10];
         for (int i = 0; i < runRandSeeds.length; i++)
             runRandSeeds[i] = Utility.rng.nextLong();
@@ -134,7 +149,7 @@ public class ScatterSearch {
             double[] diversityArray = new double[popSize];
 
             int[] BEST = null;
-            double fitnessBest = 0;
+            double fitnessBest = Double.NEGATIVE_INFINITY;
 
             for (int i = 0; i < popSize; i++) {
                 population[i] = LocalSearch.HillClimbing(overlapArray, population[i], nHCIter, threshold);
@@ -153,7 +168,7 @@ public class ScatterSearch {
             //MAIN LOOP STARTS FROM HERE
             /////////////////////////////////////////////////////////////////////////////////////////////
             for (int time = 1; time <= totalTime; time++) {
-                double fitnessRunBest = 0;
+                double fitnessRunBest = Double.NEGATIVE_INFINITY;
 
                 //Evaluating fitness and Diversity
                 fitnessArray = new double[population.length];
@@ -185,8 +200,8 @@ public class ScatterSearch {
                 //
 
                 ArrayList<int[]> newIndividuals = new ArrayList<>();
-                
-                /*
+
+
                 for(int i = 0; i < popSize; i++) {
                     for(int j = 0; j < i; j++) {
                         int[][] children = Utility.crossover(population[i], population[j]);
@@ -205,14 +220,15 @@ public class ScatterSearch {
 
                         children[0] = LocalSearch.HillClimbing(overlapArray, children[0], nHCIter, threshold);
                         children[1] = LocalSearch.HillClimbing(overlapArray, children[1], nHCIter, threshold);
-                        
+
                         newIndividuals.add(children[0]);
                         newIndividuals.add(children[1]);
 
                     }
                 }
-                */
 
+                /*
+                // Cross Fit and Diverse individuals
                 for(int i = 0; i < n; i++) {
                     for(int j = 0; j < m; j++) {
                         int[][] children = Utility.crossover(B[i], D[j]);
@@ -231,13 +247,13 @@ public class ScatterSearch {
 
                         children[0] = LocalSearch.HillClimbing(overlapArray, children[0], nHCIter, threshold);
                         children[1] = LocalSearch.HillClimbing(overlapArray, children[1], nHCIter, threshold);
-                        
+
                         newIndividuals.add(children[0]);
                         newIndividuals.add(children[1]);
 
                     }
                 }
-               
+               // Cross Fit and Fit individuals
                 for(int i = 0; i < n; i++) {
                     for(int j = 0; j < i; j++) {
                         int[][] children = Utility.crossover(B[i], B[j]);
@@ -256,13 +272,13 @@ public class ScatterSearch {
 
                         children[0] = LocalSearch.HillClimbing(overlapArray, children[0], nHCIter, threshold);
                         children[1] = LocalSearch.HillClimbing(overlapArray, children[1], nHCIter, threshold);
-                        
+
                         newIndividuals.add(children[0]);
                         newIndividuals.add(children[1]);
 
                     }
                 }
-
+                */
 
                 for (int[] individual: newIndividuals) {
                     double fitness = Utility.fitness(individual, overlapArray, threshold);
@@ -276,7 +292,7 @@ public class ScatterSearch {
                         fitnessBest = fitness;
                     }
                 }
-                
+
                 int [][] newPopulation = new int[newIndividuals.size() + popSize][];
                 newIndividuals.toArray(newPopulation);
 
