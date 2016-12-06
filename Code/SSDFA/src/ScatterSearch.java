@@ -51,7 +51,7 @@ public class ScatterSearch {
         m = Integer.parseInt(args[2]);
         popSize = n + m;
         nHCIter = Integer.parseInt(args[3]);
-        thresholdWeight = Double.parseDouble(args[4];)
+        thresholdWeight = Double.parseDouble(args[4]);
         totalTime = Integer.parseInt(args[4]);
         diversityMeasure = args[5];
 
