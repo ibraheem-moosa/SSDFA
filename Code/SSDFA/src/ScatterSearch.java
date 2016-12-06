@@ -47,13 +47,13 @@ public class ScatterSearch {
 
         int popSize = n + m;
 
-        n = Integer.parseInt(args[1]);
-        m = Integer.parseInt(args[2]);
+        n = Integer.parseInt(args[2]);
+        m = Integer.parseInt(args[3]);
         popSize = n + m;
-        nHCIter = Integer.parseInt(args[3]);
-        thresholdWeight = Double.parseDouble(args[4]);
-        totalTime = Integer.parseInt(args[4]);
-        diversityMeasure = args[5];
+        nHCIter = Integer.parseInt(args[4]);
+        thresholdWeight = Double.parseDouble(args[5]);
+        totalTime = Integer.parseInt(args[6]);
+        diversityMeasure = args[7];
 
         if (0 == diversityMeasure.compareTo("PDistance"))
             Utility.divMeasure = Utility.DivMeasure_PDistance;
