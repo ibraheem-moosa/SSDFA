@@ -181,8 +181,8 @@ public class Utility {
             }
         }
 
-        //fitness=((double)totalOverlap)/contigCount;
-        fitness = totalOverlap;
+        fitness=((double)totalOverlap)/contigCount;
+        //fitness = totalOverlap;
 
         return fitness;
     }
