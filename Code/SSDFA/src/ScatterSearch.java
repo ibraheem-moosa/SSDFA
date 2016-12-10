@@ -15,6 +15,11 @@ import java.util.*;
 public class ScatterSearch {
 
     public static void main(String args[]) {
+
+        if(args.length != 8) {
+            System.out.println("Usage: java ScatterSearch FragmentFile ResultFile n m nHCIter thresholdWeight TotalTime diversityMeasure");
+            System.exit(1);
+        }
         String strResultFile = args[1];
 
         long fileReadStartTime = System.currentTimeMillis();
