@@ -4,10 +4,3 @@ HCIteration=500
 thresholdweight=0.16
 totaltime=200
 diversity=PDistance
-
-
-
-
-
-
-

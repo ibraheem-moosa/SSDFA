@@ -186,7 +186,22 @@ public class Utility {
 
         return fitness;
     }
+/*
+    public static double fitness(int[] individual, int[][] overlapArray, long threshold)
+    {
+        double fitness = 0.0;
 
+        for(int i = 0; i < individual.length; i++)
+        {
+            for(int j = 0; j < individual.length; j++)
+            {
+                fitness += Math.abs(i - j) * overlapArray[individual[i]][individual[j]];
+            }
+        }
+        fitness *= -1.0;
+        return fitness;
+    }
+*/
     public static List<String> contigs(int[] individual, int[][] overlapArray, long threshold, GeneralizedSuffixTree tree)
     {
         List<String> consensusSequences = new ArrayList<>();

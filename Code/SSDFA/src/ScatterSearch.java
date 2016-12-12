@@ -10,10 +10,16 @@
 import java.io.*;
 import java.util.*;
 import suffixtree.*;
+import java.util.*;
 
 public class ScatterSearch {
 
     public static void main(String args[]) {
+
+        if(args.length != 8) {
+            System.out.println("Usage: java ScatterSearch FragmentFile ResultFile n m nHCIter thresholdWeight TotalTime diversityMeasure");
+            System.exit(1);
+        }
         String strResultFile = args[1];
 
         long fileReadStartTime = System.currentTimeMillis();
@@ -46,6 +52,20 @@ public class ScatterSearch {
 
         int popSize = n + m;
 
+        n = Integer.parseInt(args[2]);
+        m = Integer.parseInt(args[3]);
+        popSize = n + m;
+        nHCIter = Integer.parseInt(args[4]);
+        thresholdWeight = Double.parseDouble(args[5]);
+        totalTime = Integer.parseInt(args[6]);
+        diversityMeasure = args[7];
+
+        if (0 == diversityMeasure.compareTo("PDistance"))
+            Utility.divMeasure = Utility.DivMeasure_PDistance;
+        else
+            Utility.divMeasure = Utility.DivMeasure_HamDistance;
+
+        /*
         try {
             Properties prop = new Properties();
 
@@ -66,6 +86,7 @@ public class ScatterSearch {
         } catch (Exception e) {
             System.out.println("Using hard-coded default configuration.");
         }
+        */
 
         //
         // We set the threshold to be thresholdWeight fraction of mean fragment length
@@ -83,7 +104,7 @@ public class ScatterSearch {
         //
         // Setup 10 random numbers as seeds for 10 runs
         //
-        Utility.rng.setSeed(1);
+        //Utility.rng.setSeed(1);
         long[] runRandSeeds = new long[10];
         for (int i = 0; i < runRandSeeds.length; i++)
             runRandSeeds[i] = Utility.rng.nextLong();
@@ -133,7 +154,7 @@ public class ScatterSearch {
             double[] diversityArray = new double[popSize];
 
             int[] BEST = null;
-            double fitnessBest = 0;
+            double fitnessBest = Double.NEGATIVE_INFINITY;
 
             for (int i = 0; i < popSize; i++) {
                 population[i] = LocalSearch.HillClimbing(overlapArray, population[i], nHCIter, threshold);
@@ -152,7 +173,7 @@ public class ScatterSearch {
             //MAIN LOOP STARTS FROM HERE
             /////////////////////////////////////////////////////////////////////////////////////////////
             for (int time = 1; time <= totalTime; time++) {
-                double fitnessRunBest = 0;
+                double fitnessRunBest = Double.NEGATIVE_INFINITY;
 
                 //Evaluating fitness and Diversity
                 fitnessArray = new double[population.length];
@@ -182,14 +203,12 @@ public class ScatterSearch {
                 //
                 // So, the total size of new population: popSize * popSize
                 //
-                int[][] newPopulation = new int[popSize * popSize][];
 
-                for (int i = 0; i < popSize; i++) {
-                    newPopulation[i] = population[i];
-                }
+                ArrayList<int[]> newIndividuals = new ArrayList<>();
 
-                for (int i = 0, k = popSize; i < popSize; i++) {
-                    for (int j = 0; j < i; j++) {
+
+                for(int i = 0; i < popSize; i++) {
+                    for(int j = 0; j < i; j++) {
                         int[][] children = Utility.crossover(population[i], population[j]);
 
                         //
@@ -207,31 +226,83 @@ public class ScatterSearch {
                         children[0] = LocalSearch.HillClimbing(overlapArray, children[0], nHCIter, threshold);
                         children[1] = LocalSearch.HillClimbing(overlapArray, children[1], nHCIter, threshold);
 
-                        double fitness0 = Utility.fitness(children[0], overlapArray, threshold);
-                        double fitness1 = Utility.fitness(children[1], overlapArray, threshold);
+                        newIndividuals.add(children[0]);
+                        newIndividuals.add(children[1]);
 
-                        //
-                        // best fitness in the current run
-                        //
-                        if (fitness0 > fitnessRunBest) {
-                            fitnessRunBest = fitness0;
-                        }
-                        if (fitness1 > fitnessRunBest) {
-                            fitnessRunBest = fitness1;
-                        }
-
-                        if (fitness0 > fitnessBest) {
-                            BEST = children[0];
-                            fitnessBest = fitness0;
-                        }
-                        if (fitness1 > fitnessBest) {
-                            BEST = children[1];
-                            fitnessBest = fitness1;
-                        }
-
-                        newPopulation[k++] = children[0];
-                        newPopulation[k++] = children[1];
                     }
+                }
+
+                /*
+                // Cross Fit and Diverse individuals
+                for(int i = 0; i < n; i++) {
+                    for(int j = 0; j < m; j++) {
+                        int[][] children = Utility.crossover(B[i], D[j]);
+
+                        //
+                        // Normal mutation operation
+                        //
+                        children[0] = Utility.mutation(children[0]);
+                        children[1] = Utility.mutation(children[1]);
+
+                        //
+                        // Exploitative mutation operation
+                        //
+                        children[0] = Utility.mutation(children[0], threshold, overlapArray);
+                        children[1] = Utility.mutation(children[1], threshold, overlapArray);
+
+                        children[0] = LocalSearch.HillClimbing(overlapArray, children[0], nHCIter, threshold);
+                        children[1] = LocalSearch.HillClimbing(overlapArray, children[1], nHCIter, threshold);
+
+                        newIndividuals.add(children[0]);
+                        newIndividuals.add(children[1]);
+
+                    }
+                }
+               // Cross Fit and Fit individuals
+                for(int i = 0; i < n; i++) {
+                    for(int j = 0; j < i; j++) {
+                        int[][] children = Utility.crossover(B[i], B[j]);
+
+                        //
+                        // Normal mutation operation
+                        //
+                        children[0] = Utility.mutation(children[0]);
+                        children[1] = Utility.mutation(children[1]);
+
+                        //
+                        // Exploitative mutation operation
+                        //
+                        children[0] = Utility.mutation(children[0], threshold, overlapArray);
+                        children[1] = Utility.mutation(children[1], threshold, overlapArray);
+
+                        children[0] = LocalSearch.HillClimbing(overlapArray, children[0], nHCIter, threshold);
+                        children[1] = LocalSearch.HillClimbing(overlapArray, children[1], nHCIter, threshold);
+
+                        newIndividuals.add(children[0]);
+                        newIndividuals.add(children[1]);
+
+                    }
+                }
+                */
+
+                for (int[] individual: newIndividuals) {
+                    double fitness = Utility.fitness(individual, overlapArray, threshold);
+
+                    if (fitness > fitnessRunBest) {
+                        fitnessRunBest = fitness;
+                    }
+
+                    if (fitness > fitnessBest) {
+                        BEST = individual;
+                        fitnessBest = fitness;
+                    }
+                }
+
+                int [][] newPopulation = new int[newIndividuals.size() + popSize][];
+                newIndividuals.toArray(newPopulation);
+
+                for (int i = newIndividuals.size(); i < popSize + newIndividuals.size(); i++) {
+                    newPopulation[i] = population[i - newIndividuals.size()];
                 }
 
                 population = newPopulation;
