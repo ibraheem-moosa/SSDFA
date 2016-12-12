@@ -135,7 +135,7 @@ public class ScatterSearch {
 
         }
         */
-        for (int runId = 1; runId <= 1; runId++)
+        for (int runId = 1; runId <= 20; runId++)
         {
             long startTime = System.currentTimeMillis();
 
