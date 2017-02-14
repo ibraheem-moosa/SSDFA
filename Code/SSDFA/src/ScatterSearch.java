@@ -16,126 +16,84 @@ public class ScatterSearch {
 
     public static void main(String args[]) {
 
-        if(args.length != 8) {
-            System.out.println("Usage: java ScatterSearch FragmentFile ResultFile n m nHCIter thresholdWeight TotalTime diversityMeasure");
+        if(args.length != 10) {
+            System.out.println("Usage: java ScatterSearch FragmentFile ResultFile n m nHCIter thresholdWeight numOfGens diversityMeasure numOfRuns nSSIter");
             System.exit(1);
         }
         String strResultFile = args[1];
 
         long fileReadStartTime = System.currentTimeMillis();
+        
         GeneralizedSuffixTree tree = ReadAndStoreFragments(args[0]);
         int[][] overlapArray = tree.allPairSuffixPrefix();
+        long fileReadEndTime = System.currentTimeMillis();
+
+        System.out.println("Fragments, config read and store time: " + (fileReadEndTime - fileReadStartTime) + " ms");
 
         //
         // SIZE is total number of fragments in the tree, divided by 2. Because
         // Each fragment is kept twice in the tree; once in forward direction
         // another one as RC (reverse complement)
         //
+        
         int SIZE = tree.getStringCount() / 2;
 
-        long threshold = 0;
-        long totalLength = 0;
-        long totalOverlap = 0;
-
-        //
-        // Default configuration. Can be overridden by using
-        // configuration file (config.txt). The file should
-        // be placed in the current directory (i.e. the directory
-        // from where the ScatterSearch class gets loaded).
-        //
+        /*
         int n = 30;
         int m = 20;
         int nHCIter = 500;
         double thresholdWeight = 0.20;
-        int totalTime = 200;
+        int numOfGens = 200;
         String diversityMeasure = "PDistance";
+        */
 
+        int n = Integer.parseInt(args[2]);
+        int m = Integer.parseInt(args[3]);
+        boolean noDiversity = (m == 0);
         int popSize = n + m;
-
-        n = Integer.parseInt(args[2]);
-        m = Integer.parseInt(args[3]);
-        popSize = n + m;
-        nHCIter = Integer.parseInt(args[4]);
-        thresholdWeight = Double.parseDouble(args[5]);
-        totalTime = Integer.parseInt(args[6]);
-        diversityMeasure = args[7];
+        int nHCIter = Integer.parseInt(args[4]);
+        double thresholdWeight = Double.parseDouble(args[5]);
+        int numOfGens = Integer.parseInt(args[6]);
+        String diversityMeasure = args[7];
+        int numOfRuns = Integer.parseInt(args[8]);
+        int nSSIter = Integer.parseInt(args[9]);
 
         if (0 == diversityMeasure.compareTo("PDistance"))
             Utility.divMeasure = Utility.DivMeasure_PDistance;
         else
             Utility.divMeasure = Utility.DivMeasure_HamDistance;
 
-        /*
-        try {
-            Properties prop = new Properties();
-
-            prop.load(new FileInputStream("config.txt"));
-
-            n = Integer.parseInt(prop.getProperty("n"));
-            m = Integer.parseInt(prop.getProperty("m"));
-            popSize = n + m;
-            nHCIter = Integer.parseInt(prop.getProperty("HCIteration"));
-            thresholdWeight = Double.parseDouble(prop.getProperty("thresholdweight"));
-            totalTime = Integer.parseInt(prop.getProperty("totaltime"));
-            diversityMeasure = prop.getProperty("diversity");
-            if (0 == diversityMeasure.compareTo("PDistance"))
-                Utility.divMeasure = Utility.DivMeasure_PDistance;
-            else
-                Utility.divMeasure = Utility.DivMeasure_HamDistance;
-            System.out.println("Read configurations from config.txt.");
-        } catch (Exception e) {
-            System.out.println("Using hard-coded default configuration.");
-        }
-        */
-
+        long totalOverlap = 0; 
+        
         //
         // We set the threshold to be thresholdWeight fraction of mean fragment length
         //
+        
+        long totalLength = 0;
         for (int i = 0; i < SIZE; i++) {
             totalLength += tree.getString(i).length();
         }
-        threshold = (int)(thresholdWeight * totalLength / SIZE);
+        
+        long threshold = (long)(thresholdWeight * totalLength / SIZE);
         System.out.println("Overlap threshold (Auto-tuned):  " + threshold);
 
-        long fileReadEndTime = System.currentTimeMillis();
-
-        System.out.println("Fragments, config read and store time: " + (fileReadEndTime - fileReadStartTime) + " ms");
-
         //
-        // Setup 10 random numbers as seeds for 10 runs
+        // Setup numOfRuns random numbers as seeds for 10 runs
         //
-        //Utility.rng.setSeed(1);
-        long[] runRandSeeds = new long[10];
+        Utility.rng.setSeed(10);
+        
+        long[] runRandSeeds = new long[numOfRuns];
         for (int i = 0; i < runRandSeeds.length; i++)
             runRandSeeds[i] = Utility.rng.nextLong();
 
-        //following line are commented out to produce file in .fna format(contains only fragment sequence)
-        /*
-        try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(strResultFile, true));
+        double[] fitnessArray = new double[popSize * popSize];
+        double[] diversityArray = new double[popSize * popSize];
 
-            bw.newLine();
-            bw.append(new Date().toString());
-            bw.newLine();
-            bw.append("n = " + n);
-            bw.newLine();
-            bw.append("m = " + m);
-            bw.newLine();
-            bw.append("HCIteration = " + nHCIter);
-            bw.newLine();
-            bw.append("thresholdweight = " + thresholdWeight);
-            bw.newLine();
-            bw.append("totaltime = " + totalTime);
-            bw.newLine();
-            bw.append("diversity = " + diversityMeasure);
-            bw.newLine();
-            bw.close();
+        // best individual from all runs
+        int[] BEST = null;
+        double fitnessBest = Double.NEGATIVE_INFINITY;
 
-        } catch (Exception e) {
-
-        }
-        */
-        for (int runId = 1; runId <= 1; runId++)
+        for (int runId = 1; runId <= numOfRuns; runId++)
         {
             long startTime = System.currentTimeMillis();
 
@@ -148,54 +106,70 @@ public class ScatterSearch {
             int[][] seededPopulation = generateSeededPopulation(n, SIZE, overlapArray, nHCIter, threshold);
             System.out.println("Generated Seeded Population");
 
-            int[][] population = generateDiversePopulation(m, SIZE, seededPopulation);
+            int[][] diversePopulation = generateDiversePopulation(m, SIZE, seededPopulation);
             System.out.println("Generated Diverse Population");
-            double[] fitnessArray = new double[popSize];
-            double[] diversityArray = new double[popSize];
+            seededPopulation = null;
+            int[][] population = new int[popSize * popSize][];
+            for(int i = 0; i < popSize; i++)
+                population[i] = diversePopulation[i];
+            diversePopulation = null;
+            
+            // fitnessRunBest contains the best fitness of this run
+            double fitnessRunBest = Double.NEGATIVE_INFINITY;
+            // best individual of this run
+            int[] runBEST = null;
 
-            int[] BEST = null;
-            double fitnessBest = Double.NEGATIVE_INFINITY;
-
+            // Do hill climbing on initial population
             for (int i = 0; i < popSize; i++) {
-                population[i] = LocalSearch.HillClimbing(overlapArray, population[i], nHCIter, threshold);
-                double fitnessI = Utility.fitness(population[i], overlapArray, threshold);
-
-                if (BEST == null || fitnessI > fitnessBest) {
-                    BEST = population[i];
-                    fitnessBest = fitnessI;
+                population[i] = LocalSearch.HillClimbing(overlapArray, population[i], 5000, threshold);
+                fitnessArray[i] = Utility.fitness(population[i], overlapArray, threshold);
+            }
+             
+            for (int i = 0; i < popSize; i++) {
+                
+                if (runBEST == null || fitnessArray[i] > fitnessRunBest) {
+                    runBEST = population[i];
+                    fitnessRunBest = fitnessArray[i];
                 }
             }
 
-            totalOverlap = Utility.overlapCount(BEST, overlapArray, tree);
-            System.out.println("0 " + fitnessBest + " " + fitnessBest + " " + totalOverlap);
-
+            long runBESTTotalOverlap = Utility.overlapCount(runBEST, overlapArray, tree);
+            long runBESTnContig = Utility.contigCount(runBEST, overlapArray, threshold);
+            
+            System.out.println("Initial Population Best Fitness: " + fitnessRunBest + " Total Overlap: " + runBESTTotalOverlap);
+            
+            int numOfGenWithNoUpgrade = 0;
             //////////////////////////////////////////////////////////////////////////////////////////////
             //MAIN LOOP STARTS FROM HERE
             /////////////////////////////////////////////////////////////////////////////////////////////
-            for (int time = 1; time <= totalTime; time++) {
-                double fitnessRunBest = Double.NEGATIVE_INFINITY;
+            for (int time = 1; time <= numOfGens; time++) {
+                
+                double fitnessGenBest = Double.NEGATIVE_INFINITY;
+                
+                // Extract diverse and fit individuals to generate parents
+                // at time == 1 we already have it
+                if(time != 1){
+                    int[][] B = getFitIndividuals(population, fitnessArray, n);
+                
+                    //Evaluate Diversity, fitness has already been calculated
+                
+                    int[][] D = null; 
+                    
+                    if(!noDiversity){
+                        for (int i = 0; i < population.length; i++) {
+                            diversityArray[i] = Utility.diversity(population, population[i], population.length);
+                        }
+                        D = getDiverseIndividuals(population, diversityArray, m);
+                    }
 
-                //Evaluating fitness and Diversity
-                fitnessArray = new double[population.length];
-                diversityArray = new double[population.length];
-
-                for (int i = 0; i < population.length; i++) {
-                    fitnessArray[i] = Utility.fitness(population[i], overlapArray, threshold);
-                    diversityArray[i] = Utility.diversity(population, population[i], population.length);
+                    //Generating Parents for new Population
+                    for (int i = 0; i < n; i++) 
+                        population[i] = B[i];
+                    for (int i = n; i < popSize; i++)
+                        population[i] = D[i - n];
+                    for (int i = popSize; i < population.length; i++)
+                        population[i] = null;
                 }
-
-                int[][] B = getFitIndividuals(population, fitnessArray, n);
-                int[][] D = getDiverseIndividuals(population, diversityArray, m);
-
-                //Generating Parents for new Population
-                for (int i = 0; i < n; i++) {
-                    population[i] = B[i];
-                }
-
-                for (int i = n; i < popSize; i++) {
-                    population[i] = D[i - n];
-                }
-
                 //
                 // For each pair, there will be 2 children generated. So, the size of newly generated
                 // set of individuals would be: popSize * (popSize - 1)
@@ -204,162 +178,111 @@ public class ScatterSearch {
                 // So, the total size of new population: popSize * popSize
                 //
 
-                ArrayList<int[]> newIndividuals = new ArrayList<>();
-
+                ArrayList<int[]> newIndividuals = new ArrayList<>(popSize * popSize);
 
                 for(int i = 0; i < popSize; i++) {
                     for(int j = 0; j < i; j++) {
                         int[][] children = Utility.crossover(population[i], population[j]);
-
                         //
                         // Normal mutation operation
                         //
                         children[0] = Utility.mutation(children[0]);
                         children[1] = Utility.mutation(children[1]);
-
                         //
                         // Exploitative mutation operation
                         //
                         children[0] = Utility.mutation(children[0], threshold, overlapArray);
                         children[1] = Utility.mutation(children[1], threshold, overlapArray);
-
+                        // Hill climbing
                         children[0] = LocalSearch.HillClimbing(overlapArray, children[0], nHCIter, threshold);
                         children[1] = LocalSearch.HillClimbing(overlapArray, children[1], nHCIter, threshold);
 
                         newIndividuals.add(children[0]);
                         newIndividuals.add(children[1]);
-
                     }
                 }
+                
+                for(int i = 0; i < popSize; i++){
+                    newIndividuals.add(population[i]);
+                }
+                
+                newIndividuals.toArray(population);
 
-                /*
-                // Cross Fit and Diverse individuals
-                for(int i = 0; i < n; i++) {
-                    for(int j = 0; j < m; j++) {
-                        int[][] children = Utility.crossover(B[i], D[j]);
-
-                        //
-                        // Normal mutation operation
-                        //
-                        children[0] = Utility.mutation(children[0]);
-                        children[1] = Utility.mutation(children[1]);
-
-                        //
-                        // Exploitative mutation operation
-                        //
-                        children[0] = Utility.mutation(children[0], threshold, overlapArray);
-                        children[1] = Utility.mutation(children[1], threshold, overlapArray);
-
-                        children[0] = LocalSearch.HillClimbing(overlapArray, children[0], nHCIter, threshold);
-                        children[1] = LocalSearch.HillClimbing(overlapArray, children[1], nHCIter, threshold);
-
-                        newIndividuals.add(children[0]);
-                        newIndividuals.add(children[1]);
-
+                for (int i = 0; i < population.length - popSize; i++) {
+                    fitnessArray[i] = Utility.fitness(population[i], overlapArray, threshold);
+                    if (fitnessArray[i] > fitnessGenBest) {
+                        fitnessGenBest = fitnessArray[i];
+                    }
+                    if (fitnessArray[i] > fitnessRunBest) {
+                        runBEST = population[i];
+                        fitnessRunBest = fitnessArray[i];
                     }
                 }
-               // Cross Fit and Fit individuals
-                for(int i = 0; i < n; i++) {
-                    for(int j = 0; j < i; j++) {
-                        int[][] children = Utility.crossover(B[i], B[j]);
-
-                        //
-                        // Normal mutation operation
-                        //
-                        children[0] = Utility.mutation(children[0]);
-                        children[1] = Utility.mutation(children[1]);
-
-                        //
-                        // Exploitative mutation operation
-                        //
-                        children[0] = Utility.mutation(children[0], threshold, overlapArray);
-                        children[1] = Utility.mutation(children[1], threshold, overlapArray);
-
-                        children[0] = LocalSearch.HillClimbing(overlapArray, children[0], nHCIter, threshold);
-                        children[1] = LocalSearch.HillClimbing(overlapArray, children[1], nHCIter, threshold);
-
-                        newIndividuals.add(children[0]);
-                        newIndividuals.add(children[1]);
-
-                    }
+                
+                if(fitnessGenBest < fitnessRunBest){
+                    numOfGenWithNoUpgrade++;
                 }
-                */
-
-                for (int[] individual: newIndividuals) {
-                    double fitness = Utility.fitness(individual, overlapArray, threshold);
-
-                    if (fitness > fitnessRunBest) {
-                        fitnessRunBest = fitness;
-                    }
-
-                    if (fitness > fitnessBest) {
-                        BEST = individual;
-                        fitnessBest = fitness;
-                    }
+                else{
+                    numOfGenWithNoUpgrade = 0;
+                    runBESTTotalOverlap = Utility.overlapCount(runBEST, overlapArray, tree);
+                    runBESTnContig = Utility.contigCount(runBEST, overlapArray, threshold);
                 }
 
-                int [][] newPopulation = new int[newIndividuals.size() + popSize][];
-                newIndividuals.toArray(newPopulation);
-
-                for (int i = newIndividuals.size(); i < popSize + newIndividuals.size(); i++) {
-                    newPopulation[i] = population[i - newIndividuals.size()];
-                }
-
-                population = newPopulation;
-
-                totalOverlap = Utility.overlapCount(BEST, overlapArray, tree);
-
-                long nContig = Utility.contigCount(BEST, overlapArray, threshold);
                 long endTime = System.currentTimeMillis();
                 long duration = (endTime - startTime) +  (fileReadEndTime - fileReadStartTime);
-                System.out.println(time + " " + fitnessRunBest + " " + fitnessBest + " " + totalOverlap + " " + nContig + " " + duration);
+                System.out.println(time + " " + fitnessGenBest + " " + fitnessRunBest + " " + runBESTTotalOverlap + " " + runBESTnContig + " " + duration);
+                
+                if(numOfGenWithNoUpgrade > nSSIter)
+                    break;
             }
-
-            try {
-                BufferedWriter bw = new BufferedWriter(new FileWriter(strResultFile, true));
-
-                long nContig = Utility.contigCount(BEST, overlapArray, threshold);
-                System.out.println("number of contigs : " + Long.toString(nContig));
-                List<String> contigs = Utility.contigs(BEST, overlapArray, threshold, tree);
-                //System.err.println("contigs list size " + contigs.size());
-                long endTime = System.currentTimeMillis();
-                long duration = (endTime - startTime) +  (fileReadEndTime - fileReadStartTime);
-                                System.out.println("Output file created");
-                //bw.append(runId + " " + fitnessBest + " " + totalOverlap + " " + nContig + " " + duration);
-                //bw.newLine();
-
-                //loop to print fragment sequence
-                for(int l = 0;l<contigs.size();l++) {
-                    //giving name to each sequence of .fna output file
-                    String seqName = ">Sequence_"+Integer.toString(l);
-                    bw.append(seqName);
-                    bw.newLine();
-
-                    String sequence = contigs.get(l);
-                    //printing each sequence. 70 bp per line
-                    for(int l1 = 0;l1<sequence.length();l1+=70) {
-                        String s;
-                        if(l1+70<sequence.length()) {
-                            s = sequence.substring(l1, l1+70);
-                        }
-                        else{
-                            s = sequence.substring(l1);
-                        }
-                        bw.append(s);
-                        bw.newLine();
-                    }
-                }
-
-                bw.close();
-            } catch (Exception e) {
-                //System.err.println("Failed to created/open output file");
-                System.err.println(e);
+            if(fitnessRunBest > fitnessBest){
+                BEST = runBEST;
+                fitnessBest = fitnessRunBest;
             }
-
         }
-        //////////////////////////////////////////////////////////////////////////////////////////////
+         //////////////////////////////////////////////////////////////////////////////////////////////
         //MAIN LOOP ENDS HERE
         /////////////////////////////////////////////////////////////////////////////////////////////
+        if(BEST == null){
+           System.out.println("Holy");
+        } 
+        try {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(strResultFile, true));
+
+            long nContig = Utility.contigCount(BEST, overlapArray, threshold);
+            List<String> contigs = Utility.contigs(BEST, overlapArray, threshold, tree);
+            //System.err.println("contigs list size " + contigs.size());
+            //bw.append(runId + " " + fitnessRunBest + " " + totalOverlap + " " + nContig + " " + duration);
+            //bw.newLine();
+
+            //loop to print fragment sequence
+            for(int l = 0;l<contigs.size();l++) {
+                //giving name to each sequence of .fna output file
+                String seqName = ">Sequence_"+Integer.toString(l);
+                bw.append(seqName);
+                bw.newLine();
+
+                String sequence = contigs.get(l);
+                //printing each sequence. 70 bp per line
+                for(int l1 = 0;l1<sequence.length();l1+=70) {
+                    String s;
+                    if(l1+70<sequence.length()) {
+                        s = sequence.substring(l1, l1+70);
+                    }
+                    else{
+                        s = sequence.substring(l1);
+                    }
+                    bw.append(s);
+                    bw.newLine();
+                }
+            }
+
+            bw.close();
+        } catch (Exception e) {
+            //System.err.println("Failed to created/open output file");
+            System.err.println(e);
+
+        }
     }
 
     public static GeneralizedSuffixTree ReadAndStoreFragments(String strFragmentFile)
@@ -432,25 +355,19 @@ public class ScatterSearch {
     public static int[][] generatePopulation(int popoulationSize, int individualSize) {
 
         int[][] population = new int[popoulationSize][];
-
         for (int i = 0; i < popoulationSize; i++) {
             population[i] = Utility.generateIndividual(individualSize);
         }
-
         return population;
-
     }
 
     public static int[][] generateSeededPopulation(int popoulationSize, int individualSize, int[][] ov, long maxIter, long threshold) {
 
         int[][] population = new int[popoulationSize][];
-
         for (int i = 0; i < popoulationSize; i++) {
             population[i] = LocalSearch.HillClimbing(ov, Utility.generateIndividual(individualSize), maxIter, threshold);
         }
-
         return population;
-
     }
 
     public static int[][] generateDiversePopulation(int diversePopulationSize, int individualSize, int[][] seed) {
@@ -519,17 +436,19 @@ public class ScatterSearch {
                 return cmp;
             }
         };
-
+        
         int[][] selectedPopulation = new int[n][];
         Integer[] indices = new Integer[prop.length];
-
+        //PriorityQueue pqIndices = new PriorityQueue(prop.length, comparator);
         for (int i = 0; i < indices.length; i++) {
             indices[i] = i;
+            //pqIndices.add(i);
         }
         Arrays.sort(indices, comparator);
 
         for (int i = 0; i < n; i++) {
             selectedPopulation[i] = population[indices[i]];
+            //selectedPopulation[i] = population[pqIndices.poll()];
         }
 
         return selectedPopulation;

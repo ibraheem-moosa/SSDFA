@@ -15,7 +15,7 @@ import suffixtree.GeneralizedSuffixTree;
  * @author pritom
  */
 public class Utility {
-    static final Random rng = new Random(1);
+    static final Random rng = new Random(10);
 
     static final int DivMeasure_HamDistance = 0;
     static final int DivMeasure_PDistance = 1;
@@ -108,7 +108,6 @@ public class Utility {
     {
         int children[][] = new int[2][];
         int length = parent0.length;
-
 
         children[0] = new int[length];
         children[1] = new int[length];
@@ -335,8 +334,6 @@ public class Utility {
         return consensusSequences;
     }
 
-
-
     public static double diversity(int [][] population, int [] individual, int currentPopSize)
     {
         double dist=0;
@@ -488,7 +485,7 @@ public class Utility {
             int ov = overlapArray[individual[i]][individual[i + 1]];
             totalOverlap += ov;
         }
-
+        /*
         if (null != tree)
         {
             //
@@ -508,7 +505,7 @@ public class Utility {
                 }
             }
         }
-
+        */
         return totalOverlap;
     }
 
