@@ -2,7 +2,7 @@
 This is the repository for Scatter Search for DNA Fragment Assembly tool (SS-DFA).
 
 # Usage
-java ScatterSearch FragmentFile ResultFile n m nHCIter thresholdWeight numOfGens diversityMeasure numOfRuns nSSIter
+**java ScatterSearch FragmentFile ResultFile n m nHCIter thresholdWeight numOfGens diversityMeasure numOfRuns nSSIter**
 
 Here numOfGens is the maximum number of generations executed by the Scatter Search algorithm, numOfRuns is the number of time Scatter Search algorithm is executed and the best result of all these runs is given as output and nSSIter is the maximum number of generations allowed by Scatter Search without any improvements. 
 To disable the effect of the last parameter set it greater than or equal to numOfGens.
@@ -30,10 +30,10 @@ To disable exploitative mutation in hill-climbing (HC):
 - Comment out the line: //int[] r = Utility.mutation(best, threshold, ov);
 - Uncomment the line right above it: int[] r = Utility.mutation(best);
 
-To run GAGE validation scripts you will have to compile and install MUMmer. Go into the MUMmer directory and run make. For this command to be successful there cannot
-be any spaces in the names of any directory in the path of the MUMmer directory. Also you may need to install csh and some other dependencies. 
+To run GAGE validation scripts you will have to compile and install MUMmer. **Go into the MUMmer directory and run make**. 
+For this command to be successful there cannot be any spaces in the names of any directory in the path of the MUMmer directory. Also you may need to **install csh and some other dependencies**. 
 
 Sample GAGE validation script run.
 Go to gage-validation directory and run.
-sh getCorrectnessStats.sh ../Original/ACIN02000001.1.fasta ../FinalAssembly/en/ACIN02000001_Assembly_en_best.fa
+**sh getCorrectnessStats.sh ../Original/ACIN02000001.1.fasta ../FinalAssembly/en/ACIN02000001_Assembly_en_best.fa**
 
