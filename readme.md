@@ -34,7 +34,7 @@ To disable exploitative mutation in hill-climbing (HC):
 
 For this command to be successful there cannot be any spaces in the names of any directory in the path of the ValidationScripts directory. Also you may need to **install csh and some other dependencies**. 
 
-Once the necessary programmes are compiled you can run GAGE validation scripts by goinn into ValidationScripts directory and run
+Once the necessary programmes are compiled you can run GAGE validation scripts by going into ValidationScripts directory and run
 
 sh getCorrectnessStats.sh Reference_Fasta Contig_Fasta
 
