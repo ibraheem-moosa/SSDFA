@@ -11,7 +11,7 @@ The output file will contain data from all the runs. Each output line of each ru
 RunId fitness totalOverlap ContigCount WallClockTime
 
 # configuration
-Default configuration is already hard-coded in the source code. The default (tuned) values are specified in the paper. Certain configurations can be overridden using a config.txt file. The file should be placed in the current directory (i.e. the directory from where the ScatterSearch class gets loaded).
+By default we ran the programme with parameter (n = 30, m = 20, nHCIter = 50, thresholdWeight = 0.20, numOfGens = 200, diversityMeasure = PDistance, numOfRuns = 10, nSSIter = 200) when exploitive mutations are not used. When exploitive mutations are used we set n = 50 and m = 0.
 
 The parameters "Selection strategy for fit individuals" and "Fitness function" can be changed by modifying the code. We made changes in the code directly when we experimented with different selection strategies and fitness functions. We do not recommend users changing these. However, if you must, you can go into the source code and make necessary changes.
 
