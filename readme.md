@@ -30,13 +30,15 @@ To disable exploitative mutation in hill-climbing (HC):
 - Comment out the line: //int[] r = Utility.mutation(best, threshold, ov);
 - Uncomment the line right above it: int[] r = Utility.mutation(best);
 
-To run GAGE validation scripts you will have to compile and install MUMmer. **Go into the ValidationScripts directory and run make**. 
+To run GAGE validation scripts first go into the ValidationScripts directory and run make. 
 
 For this command to be successful there cannot be any spaces in the names of any directory in the path of the ValidationScripts directory. Also you may need to **install csh and some other dependencies**. 
 
-Sample GAGE validation script run.
+Once the necessary programmes are compiled you can run GAGE validation scripts by goinn into ValidationScripts directory and run
 
-Go to ValidationScripts directory and run.
+sh getCorrectnessStats.sh Reference_Fasta Contig_Fasta
 
-**sh getCorrectnessStats.sh ../Original/ACIN02000001.1.fasta ../FinalAssembly/en/ACIN02000001_Assembly_en_best.fa**
+For example.
+
+sh getCorrectnessStats.sh ../Original/ACIN02000001.1.fasta ../FinalAssembly/en/ACIN02000001_Assembly_en_best.fa
 
