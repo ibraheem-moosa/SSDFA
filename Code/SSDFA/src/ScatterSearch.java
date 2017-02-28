@@ -121,7 +121,7 @@ public class ScatterSearch {
 
             // Do hill climbing on initial population
             for (int i = 0; i < popSize; i++) {
-                population[i] = LocalSearch.HillClimbing(overlapArray, population[i], 5000, threshold);
+                population[i] = LocalSearch.HillClimbing(overlapArray, population[i], nHCIter, threshold);
                 fitnessArray[i] = Utility.fitness(population[i], overlapArray, threshold);
             }
              

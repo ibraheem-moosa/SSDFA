@@ -1,0 +1,20 @@
+/media/ibraheem/65300f3f-156c-490a-8b9a-14afe51f05cd/home/ibraheem/Research/Thesis/DNA_Assembly/SSDFA/MUMmer3.23/../Original/ACIN02000001.1.fasta /media/ibraheem/65300f3f-156c-490a-8b9a-14afe51f05cd/home/ibraheem/Research/Thesis/DNA_Assembly/SSDFA/MUMmer3.23/../FinalAssembly/en/ACIN02000001_Assembly_en_best.fa
+NUCMER
+>gi|227466391|gb|ACIN02000001.1| Sequence_12 2170 909
+1382 2170 909 121 0 0 0
+0
+>gi|227466391|gb|ACIN02000001.1| Sequence_16 2170 329
+1061 1389 329 1 0 0 0
+0
+>gi|227466391|gb|ACIN02000001.1| Sequence_17 2170 256
+864 1119 1 256 0 0 0
+0
+>gi|227466391|gb|ACIN02000001.1| Sequence_27 2170 509
+105 613 509 1 0 0 0
+0
+>gi|227466391|gb|ACIN02000001.1| Sequence_31 2170 264
+614 877 1 264 0 0 0
+0
+>gi|227466391|gb|ACIN02000001.1| Sequence_67 2170 641
+1 124 518 641 0 0 0
+0
