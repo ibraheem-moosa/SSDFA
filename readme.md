@@ -30,7 +30,7 @@ To disable exploitative mutation in hill-climbing (HC):
 - Comment out the line: //int[] r = Utility.mutation(best, threshold, ov);
 - Uncomment the line right above it: int[] r = Utility.mutation(best);
 
-To run GAGE validation scripts first go into the ValidationScripts directory and run make. 
+**To run GAGE validation scripts** first go into the ValidationScripts directory and run make. 
 
 For this command to be successful there cannot be any spaces in the names of any directory in the path of the ValidationScripts directory. Also you may need to **install csh and some other dependencies**. 
 
