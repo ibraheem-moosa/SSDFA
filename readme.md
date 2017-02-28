@@ -34,6 +34,8 @@ To run GAGE validation scripts you will have to compile and install MUMmer. **Go
 For this command to be successful there cannot be any spaces in the names of any directory in the path of the MUMmer directory. Also you may need to **install csh and some other dependencies**. 
 
 Sample GAGE validation script run.
+
 Go to gage-validation directory and run.
+
 **sh getCorrectnessStats.sh ../Original/ACIN02000001.1.fasta ../FinalAssembly/en/ACIN02000001_Assembly_en_best.fa**
 
